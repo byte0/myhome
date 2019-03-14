@@ -76,10 +76,10 @@ class Mymap extends React.Component {
     let map = new BMap.Map("allmap");
     map.centerAndZoom(new BMap.Point(116.404, 39.915), 5);
     map.enableScrollWheelZoom();
-    let MAX = 100;
+    // let MAX = 100;
     let markers = [];
     let pt = null;
-    let i = 0;
+    // let i = 0;
     let xy = this.state.xy;
     for (let i in xy) {
       // 单个点坐标
@@ -93,7 +93,7 @@ class Mymap extends React.Component {
     //最简单的用法，生成一个marker数组，然后调用markerClusterer类即可。
     let BMapLib = window.BMapLib;
     // let markerClusterer = new BMapLib.MarkerClusterer(map, {markers:markers});
-    let markerClusterer = new BMapLib.MarkerClusterer(map, {
+    new BMapLib.MarkerClusterer(map, {
       markers: markers,
       girdSize: 100,
       styles: [{
