@@ -17,7 +17,7 @@ class LoadMore extends React.Component {
     }
   }
 
-  componentDidMount = async () => {
+  loadData = async () => {
     let {param} = this.props;
     let ret = await axios.post('infos/list', {
       pagenum: this.state.pagenum,
@@ -27,13 +27,24 @@ class LoadMore extends React.Component {
     // 更新数据
     this.setState({
       listData: ret.data.list.data,
-      total: ret.data.list.total
+      total: ret.data.list.total,
+      initializing: 2
     });
+  }
+
+  componentDidMount = async () => {
+    this.loadData();
   }
 
   // 下拉刷新数据
   refresh = () => {
-    console.log('下拉刷新数据')
+    // 刷新的话应该从新发送请求，并且把pagenu重置成为0,从新加载数据
+    this.setState({
+      pagenum: 0
+    }, ()=>{
+      // 重新发送请求加载数据
+      this.loadData();
+    });
   }
 
   // 加载更多数据
