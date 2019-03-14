@@ -17,23 +17,33 @@ class LoadMore extends React.Component {
     }
   }
 
-  loadData = async () => {
+  loadData = async (flag) => {
     let {param} = this.props;
     let ret = await axios.post('infos/list', {
       pagenum: this.state.pagenum,
       pagesize: this.state.pagesize,
       type: param.type
     });
+
+    let arr = [...this.state.listData];
+    if(flag === 1) {
+      // 刷新
+      arr = [...ret.data.list.data];
+    }else if(flag === 2) {
+      // 加载更多，向数组中添加数据
+      arr.push(...ret.data.list.data);
+    }
+
     // 更新数据
     this.setState({
-      listData: ret.data.list.data,
+      listData: arr,
       total: ret.data.list.total,
       initializing: 2
     });
   }
 
   componentDidMount = async () => {
-    this.loadData();
+    this.loadData(1);
   }
 
   // 下拉刷新数据
@@ -43,13 +53,22 @@ class LoadMore extends React.Component {
       pagenum: 0
     }, ()=>{
       // 重新发送请求加载数据
-      this.loadData();
+      this.loadData(1);
     });
   }
 
   // 加载更多数据
   loadMore = () => {
-    console.log('加载更多数据')
+    // 加载更多的实现思路：
+    // 控制pagenum进行累加操作
+    let pn = this.state.pagenum + this.state.pagesize;
+    this.setState({
+      pagenum: pn,
+      hasMore: pn < this.state.total
+    }, () => {
+      // 重新加载数据
+      this.loadData(2);
+    })
   }
 
   // 产生内容
