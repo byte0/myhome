@@ -47,18 +47,20 @@ class LoadMore extends React.Component {
   }
 
   // 下拉刷新数据
-  refresh = () => {
+  refresh = (resolve) => {
     // 刷新的话应该从新发送请求，并且把pagenu重置成为0,从新加载数据
     this.setState({
       pagenum: 0
     }, ()=>{
       // 重新发送请求加载数据
       this.loadData(1);
+      // 完成任务
+      resolve();
     });
   }
 
   // 加载更多数据
-  loadMore = () => {
+  loadMore = (resolve) => {
     // 加载更多的实现思路：
     // 控制pagenum进行累加操作
     let pn = this.state.pagenum + this.state.pagesize;
@@ -68,6 +70,8 @@ class LoadMore extends React.Component {
     }, () => {
       // 重新加载数据
       this.loadData(2);
+      // 完成任务
+      resolve();
     })
   }
 
