@@ -78,10 +78,11 @@ class LoadMore extends React.Component {
   // 产生内容
   produceContent = (type) => {
     let listContent = [];
-    if(type === 1 || type === 2) {
-      // 资讯和头条的内容类似
-      this.state.listData.forEach(item=>{
-        let itemInfo = (
+    this.state.listData.forEach(item=>{
+      let itemInfo = null;
+      if(type === 1 || type === 2) {
+        // 资讯和头条的内容类似
+        itemInfo = (
           <Item key={item.id}>
            <Item.Image size='small' src='http://47.96.21.88:8086/public/1.png' />
            <Item.Content verticalAlign='middle'>
@@ -93,9 +94,36 @@ class LoadMore extends React.Component {
            </Item.Content>
          </Item>
         );
-        listContent.push(itemInfo);
-      });
-    }
+      }else if(type === 3) {
+        itemInfo = (
+          <li key={item.id}>
+            <div className='title'>
+              <span className='cate'>
+                <Icon color='green' name='users' size='small' />
+                思维
+              </span>
+              <span>
+                {item.question_name}
+              </span>
+            </div>
+            {item.answer_content&&(
+              <div className='user'>
+                <Icon circular name='users' size='mini'/>
+                {item.username} 的回答
+              </div>
+            )}
+            <div className="info">
+              {item.answer_content}
+            </div>
+            <div className="tag">
+              {item.question_tag&&item.question_tag.split(',').map((tag,index)=>{return <span key={index}>{tag}X</span>})}
+               <span>{item.qnum?item.qnum:0}个回答</span>
+             </div>
+          </li>
+        );
+      }
+      listContent.push(itemInfo);
+    });
     return listContent;
   }
 
