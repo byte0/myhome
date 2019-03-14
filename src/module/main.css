@@ -42,3 +42,8 @@
 .active {
   color: orange;
 }
+
+.ui.grid>.row {
+  margin: 0;
+  padding: 0;
+}

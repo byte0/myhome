@@ -48,25 +48,23 @@ class MyChart extends React.Component {
     return option;
   }
 
-  componentDidMount() {
-    let echartRef = this.echartRef;
-    let { updateChart } = this.props;
-    updateChart(echartRef);
-  }
-
   handle = () => {
-    // 更新数据(修改option中的数据并不会导致图表更新；必须显示的调用setOption)
+    let {total} = this.props;
+    // 仅仅更新数据是无法刷新echarts图表的;需要显示的调用echarts的setOption方法触发图表刷新。
+    // 复制原来的数组数据
     let arr = [...this.state.data];
-    arr[0].value = 1000;
+    arr[0].value = 1000 * total;
     this.setState({
       data: arr
+    }, () => {
+      // 需要操作echarts的setOption方法
+      // 得到组件实例对象 this.echartRef
+      // 得到echarts实例对象 this.echartRef.getEchartsInstance()
+      // echarts.setOption(); this.echartRef.getEchartsInstance().setOption();
+      let echarts = this.echartRef.getEchartsInstance();
+      let opt = this.getOptions();
+      echarts.setOption(opt);
     });
-    // 调用echarts的setOption()
-    // echartRef表示非受控组件的引用
-    // getEchartsInstance表示echarts的实例对象
-    // setOption是echarts的官方api，作用就是更新图表效果
-    let opt = this.getOptions();
-    this.echartRef.getEchartsInstance().setOption(opt);
   }
 
   render() {
@@ -74,7 +72,7 @@ class MyChart extends React.Component {
       <div>
         <Grid.Row>
           <Grid.Column width={16}>
-            <Button onClick={this.handle} fluid color='green'>计算123</Button>
+            <Button onClick={this.handle} fluid color='green'>计算</Button>
           </Grid.Column>
         </Grid.Row>
         <ReactEcharts 
@@ -92,8 +90,7 @@ class Calculator extends React.Component {
       type: '',
       year: 0,
       rate: 0,
-      total: 0,
-      echartRef: null
+      total: 0
     }
   }
 
@@ -151,7 +148,7 @@ class Calculator extends React.Component {
     // 贷款方式下拉选项数据
     const types = [
       { key: 1, text: '按房间总额', value: 1 },
-      { key: 2, text: '按贷款总额', value: 2 },
+      { key: 2, text: '按贷款总额', value: 2 }
     ];
     // 贷款年限的选项数据
     const generateYears = (n) => {
@@ -231,7 +228,7 @@ class Calculator extends React.Component {
           </Grid.Column>
         </Grid.Row>*/}
         <div className="calc-chart">
-          <MyChart updateChart={this.updateChart}/>
+          <MyChart total={this.state.total}/>
         </div>
       </Grid>
     );
