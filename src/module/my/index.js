@@ -1,15 +1,48 @@
 import React from 'react';
-import { Grid, Icon, Button } from 'semantic-ui-react';
+import { Grid, Icon, Button, Modal } from 'semantic-ui-react';
 import './index.css';
 import {baseURL} from '../../common';
 import axios from 'axios';
+
+// 图片选择弹窗
+class ImageSelectModal extends React.Component {
+  constructor(props) {
+    super(props);
+    // 该属性表示file输入域的引用，用于操作文件上传
+    this.fileInput = React.createRef();
+  }
+
+  submit = () => {
+    // 选中图片之后的操作
+
+  }
+
+  render() {
+    // 控制弹窗的显示和隐藏
+    let { open, close } = this.props;
+    return (
+      <div>
+        <Modal size='small' open={open} onClose={close}>
+          <Modal.Header>选择图片</Modal.Header>
+          <Modal.Content>
+            <input type="file" ref={this.fileInput} />
+          </Modal.Content>
+          <Modal.Actions>
+            <Button positive onClick={ this.submit } icon='checkmark' labelPosition='right' content='确定' />
+          </Modal.Actions>
+        </Modal>
+      </div>
+    );
+  }
+}
 
 class My extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       uname: '',
-      avatarPath: ''
+      avatarPath: '',
+      imageOpen: false, // 控制选择图片的弹窗显示和隐藏
     }
   }
   componentDidMount = async () => {
@@ -25,14 +58,27 @@ class My extends React.Component {
       avatarPath: ret.data.avatar
     });
   }
+  // 控制选择图片的弹窗关闭
+  closeImageWindow = () => {
+    this.setState({
+      imageOpen: false
+    });
+  }
+  // 控制选择图片的弹窗显示
+  openImageWindow = () => {
+    this.setState({
+      imageOpen: true
+    });
+  }
   render() {
     return (
       <div className='my-container'>
+        <ImageSelectModal open={this.state.imageOpen} close={this.closeImageWindow}/>
         <div className='my-title'>
           <img src={baseURL+'public/my-bg.png'} alt='me'/>
           <div className="info">
             <div className="myicon">
-              <img src={this.state.avatarPath} alt="icon"/>
+              <img onClick={this.openImageWindow} src={this.state.avatarPath} alt="icon"/>
             </div>
             <div className='name'>{this.state.uname}</div>
             <Button color='green' size='mini'>已认证</Button>
