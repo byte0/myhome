@@ -59,7 +59,8 @@ class ChatWindow extends React.Component {
     let newList = [...infoData];
     newList.push(pdata);
     this.setState({
-      infos: newList
+      infoData: newList,
+      msg: ''
     });
     // 发送聊天信息
     client.emitEvent(IMEvent.MSG_TEXT_SEND,JSON.stringify(pdata));
@@ -142,7 +143,6 @@ class Chat extends React.Component {
   }
 
   toChat = (p) => {
-    console.log(p)
     // 显示聊天窗口
     this.setState({
       open: true,
