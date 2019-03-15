@@ -6,8 +6,34 @@ import { Icon, Form, TextArea, Button } from 'semantic-ui-react';
 import {baseURL} from '../../common';
 
 class ChatWindow extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      infoData: []
+    }
+  }
+  componentDidMount = async () => {
+    let ret = await axios.post('chats/info', {
+      from_user: 1,
+      to_user: 4
+    });
+    // 更新列表数据
+    this.setState({
+      infoData: ret.data.list
+    });
+  }
   render() {
     let {close} = this.props;
+    let infolist = this.state.infoData.map(item=>{
+      // 控制类名，从而保证不同的用户样式不同
+      // let cls = currentUser===item.from_user? 'chat-info-left':'chat-info-right';
+      return (
+        <li key={item.id} className='chat-info-left'>
+          <img src={baseURL + item.avatar} alt=""/>
+          <span>{item.chat_msg}</span>
+        </li>
+      )
+    });
     return (
       <div className='chat-window'>
         <div className="chat-window-title">
@@ -16,7 +42,7 @@ class ChatWindow extends React.Component {
         </div>
         <div className="chat-window-content">
           <ul>
-            <li>列表信息</li>
+            {infolist}
           </ul>
         </div>
         <div className="chat-window-input">
