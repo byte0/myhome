@@ -17,8 +17,17 @@ class QuestionModel extends React.Component {
       value: event.target.value
     });
   }
-  submit = () => {
-    console.log('submit')
+  submit = async () => {
+    // 提交表单
+    let ret = await axios.post('infos/question', {
+      question: this.state.value
+    });
+    // 如果ret返回了正常的数据，那么应该去更新数据列表
+    if(ret.meta.status !== 200) {
+      // alert(ret.meta.msg);
+      alert('服务器发生错误，请于管理员联系 daniu@qq.com');
+    }
+    this.props.close();
   }
   render() {
     // open是布尔值，表示弹窗显示或者隐藏
