@@ -13,8 +13,9 @@ class ImageSelectModal extends React.Component {
   }
 
   submit = () => {
-    // 选中图片之后的操作
-
+    // 选中图片之后的操作:获取选择的文件内容；传递给父组件并且关闭窗口
+    let fileContent = this.fileInput.current.files[0];
+    this.props.close(fileContent);
   }
 
   render() {
@@ -43,6 +44,7 @@ class My extends React.Component {
       uname: '',
       avatarPath: '',
       imageOpen: false, // 控制选择图片的弹窗显示和隐藏
+      fileContent: null,// 表示文件的内容
     }
   }
   componentDidMount = async () => {
@@ -59,10 +61,21 @@ class My extends React.Component {
     });
   }
   // 控制选择图片的弹窗关闭
-  closeImageWindow = () => {
-    this.setState({
-      imageOpen: false
-    });
+  closeImageWindow = (file) => {
+    // 如果选中了文件，那么file表示文件的内容
+    // 如果没有选中文件，那么file表示事件对象
+    if(file&&file.target) {
+      // 事件对象，也就是没有选中文件
+      this.setState({
+        imageOpen: false
+      });
+    }else{
+      // 选中文件
+      this.setState({
+        fileContent: file,
+        imageOpen: false
+      });
+    }
   }
   // 控制选择图片的弹窗显示
   openImageWindow = () => {
