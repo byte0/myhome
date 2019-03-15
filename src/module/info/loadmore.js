@@ -1,6 +1,6 @@
 import React from 'react';
 import Tloader from 'react-touch-loader';
-import { Tab, Item, Icon } from 'semantic-ui-react';
+import { Item, Icon, Button } from 'semantic-ui-react';
 import './loadmore.css';
 import axios from 'axios';
 
@@ -124,7 +124,22 @@ class LoadMore extends React.Component {
       }
       listContent.push(itemInfo);
     });
-    return listContent;
+    if(type === 1 || type === 2) {
+      return (
+        <Item.Group unstackable>
+          {listContent}
+        </Item.Group>
+      );
+    }else if(type === 3) {
+      return (
+        <div>
+          <div className='info-ask-btn'>
+            <Button fluid color='green'>快速提问</Button>
+          </div>
+          <ul className='info-ask-list'>{listContent}</ul>
+        </div>
+      );
+    }
   }
 
   render() {

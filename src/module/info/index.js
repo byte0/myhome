@@ -1,7 +1,6 @@
 import React from 'react';
-import { Tab, Item, Icon } from 'semantic-ui-react';
+import { Tab } from 'semantic-ui-react';
 import './index.css';
-import axios from 'axios';
 import LoadMore from './loadmore';
 
 // class InfoContent extends React.Component {
