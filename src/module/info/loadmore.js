@@ -1,8 +1,45 @@
 import React from 'react';
 import Tloader from 'react-touch-loader';
-import { Item, Icon, Button } from 'semantic-ui-react';
+import { Item, Icon, Button, Modal, TextArea } from 'semantic-ui-react';
 import './loadmore.css';
 import axios from 'axios';
+
+// 弹窗组件
+class QuestionModel extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      value: ''
+    }
+  }
+  handleChange = (event) => {
+    this.setState({
+      value: event.target.value
+    });
+  }
+  submit = () => {
+    console.log('submit')
+  }
+  render() {
+    // open是布尔值，表示弹窗显示或者隐藏
+    // close 关闭弹窗时触发该事件
+    let { open, close } = this.props;
+    return (
+      <div>
+        <Modal size='small' open={open} onClose={close}>
+          <Modal.Header>发表评论</Modal.Header>
+          <Modal.Content>
+            <TextArea style={{width: '100%'}} value={this.state.value} onChange={this.handleChange}  placeholder='请输入问题' />
+          </Modal.Content>
+          <Modal.Actions>
+            <Button negative onClick={close}>取消</Button>
+            <Button positive onClick={this.submit} icon='checkmark' labelPosition='right' content='发表' />
+          </Modal.Actions>
+        </Modal>
+      </div>
+    );
+  }
+}
 
 class LoadMore extends React.Component {
   constructor(props) {
@@ -13,8 +50,24 @@ class LoadMore extends React.Component {
       pagenum: 0,      // 当前记录数
       pagesize: 2,     // 每页加载条数
       listData: [],    // 列表数据
-      total: 0         // 总条数
+      total: 0,        // 总条数
+      open: false,     // 控制弹窗显示和隐藏（true表示显示；false表示隐藏）
     }
+  }
+
+  // 控制弹窗关闭
+  closeWindow = () => {
+    // 修改open状态位
+    this.setState({
+      open: false
+    });
+  }
+  // 控制弹窗显示
+  showWindow = () => {
+    // 修改open状态位
+    this.setState({
+      open: true
+    });
   }
 
   loadData = async (flag) => {
@@ -133,8 +186,9 @@ class LoadMore extends React.Component {
     }else if(type === 3) {
       return (
         <div>
+          <QuestionModel open={this.state.open} close={this.closeWindow}/>
           <div className='info-ask-btn'>
-            <Button fluid color='green'>快速提问</Button>
+            <Button onClick={this.showWindow} fluid color='green'>快速提问</Button>
           </div>
           <ul className='info-ask-list'>{listContent}</ul>
         </div>
