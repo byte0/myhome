@@ -4,14 +4,34 @@ import './chat.css';
 import axios from 'axios';
 import { Icon, Form, TextArea, Button } from 'semantic-ui-react';
 import {baseURL} from '../../common';
+// websocket相关操作
+import handle, {IMEvent} from './wsclient';
+
+/*
+  0、初始化通信连接
+  1、接收消息
+  2、发送消息
+*/
 
 class ChatWindow extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      infoData: []
+      infoData: [],
+      client: null
     }
   }
+
+  // 接收服务器数据
+  receiveMsg = (data) => {
+    console.log('receive')
+  }
+
+  // 发送消息
+  sendMsg = (data) => {
+    console.log('send')
+  }
+
   componentDidMount = async () => {
     let ret = await axios.post('chats/info', {
       from_user: 1,
@@ -21,7 +41,18 @@ class ChatWindow extends React.Component {
     this.setState({
       infoData: ret.data.list
     });
+
+    // 初始化聊天客户端，并且在回调函数中获取对方的聊天信息
+    let currentUserId = sessionStorage.getItem('uid');
+    let wsclient = handle(currentUserId, (data) => {
+      // 接收服务器返回的数据
+      this.receiveMsg(data);
+    });
+    this.setState({
+      client: wsclient
+    });
   }
+
   render() {
     let {close} = this.props;
     let infolist = this.state.infoData.map(item=>{
@@ -50,7 +81,7 @@ class ChatWindow extends React.Component {
           <Form>
             <TextArea placeholder='请输入内容...' />
             <Button>关闭</Button>
-            <Button primary>发送</Button>
+            <Button primary onClick={this.sendMsg}>发送</Button>
           </Form>
         </div>
       </div>
