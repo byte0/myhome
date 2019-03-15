@@ -53,6 +53,24 @@ class ImageCropModal extends React.Component {
       scale: num
     });
   }
+  // 把裁切好的图片内容提交到后台
+  submit = async () => {
+    // 得到裁切的图片内容:this.editor.getImageScaledToCanvas()
+    // 得到裁切的图片信息后，还要转化为特定的数据格式：base64
+    let img = this.editor.getImageScaledToCanvas();
+    let imgContent = img.toDataURL();
+    // 调用接口发送图片内容
+    let ret = await axios.post('my/avatar', {
+      avatar: imgContent
+    });
+    // 更新父组件中图片的内容
+    this.props.updateImage(imgContent);
+  }
+
+  setEditorRef = (editor) => {
+    // 通过非受控的方式操作组件ref
+    this.editor = editor;
+  }
   render() {
     let { open, close, avatar } = this.props;
     return (
@@ -61,6 +79,7 @@ class ImageCropModal extends React.Component {
           <Modal.Header>裁切图片</Modal.Header>
           <Modal.Content>
             <AvatarEditor
+              ref={this.setEditorRef}
               borderRadius={75}
               width={150}
               height={150}
@@ -148,11 +167,19 @@ class My extends React.Component {
     });
   }
 
+  // 更新图片的内容
+  updateImage = (img) => {
+    this.setState({
+      avatarPath: img, // 更新图片内容
+      cropOpen: false  // 关闭图片裁切窗口
+    });
+  }
+
   render() {
     return (
       <div className='my-container'>
         <ImageSelectModal open={this.state.imageOpen} close={this.closeImageWindow}/>
-        <ImageCropModal avatar={this.state.fileContent} open={this.state.cropOpen} close={this.closeCropWindow}/>
+        <ImageCropModal updateImage={this.updateImage} avatar={this.state.fileContent} open={this.state.cropOpen} close={this.closeCropWindow}/>
         <div className='my-title'>
           <img src={baseURL+'public/my-bg.png'} alt='me'/>
           <div className="info">
