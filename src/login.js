@@ -41,6 +41,7 @@ class Login extends React.Component {
     // console.log(ret.data.data.token)
     // 存储token信息到sessionStorage中
     sessionStorage.setItem('mytoken', ret.data.token);
+    sessionStorage.setItem('uid', ret.data.uid);
     // 跳转到主页
     let {history} = this.props;
     history.push('/home');

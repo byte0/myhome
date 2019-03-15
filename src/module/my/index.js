@@ -2,6 +2,7 @@ import React from 'react';
 import { Grid, Icon, Button } from 'semantic-ui-react';
 import './index.css';
 import {baseURL} from '../../common';
+import axios from 'axios';
 
 class My extends React.Component {
   constructor(props) {
@@ -11,8 +12,18 @@ class My extends React.Component {
       avatarPath: ''
     }
   }
-  componentDidMount() {
-
+  componentDidMount = async () => {
+    // 表示登录用户的id
+    let uid = sessionStorage.getItem('uid');
+    // 根据用户id查询用户详细信息
+    let ret = await axios.post('my/info', {
+      user_id: uid
+    });
+    // 更新数据
+    this.setState({
+      uname: ret.data.username,
+      avatarPath: ret.data.avatar
+    });
   }
   render() {
     return (
