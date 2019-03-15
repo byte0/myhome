@@ -18,24 +18,58 @@ class ChatWindow extends React.Component {
     super(props);
     this.state = {
       infoData: [],
-      client: null
+      client: null,
+      msg: ''       // 发送的消息
     }
+  }
+  
+  handleMsg = (event) => {
+    this.setState({
+      msg: event.target.value
+    });
   }
 
   // 接收服务器数据
   receiveMsg = (data) => {
-    console.log('receive')
+    if(data.content === '对方不在线') {
+      console.log(data.content);
+      return;
+    }
+    // 获取服务器返回的数据后，直接更新本地数据即可
+    let newList = [...this.state.infoData];
+    newList.push(JSON.parse(data.content));
+    this.setState({
+      infoData: newList
+    })
   }
 
   // 发送消息
   sendMsg = (data) => {
-    console.log('send')
+    let {to_user,from_user,avatar} = this.props.chatInfo;
+    let {infoData, client, msg} = this.state;
+    // 封装消息数据包
+    let pdata = {
+      id: Math.random() + '',
+      from_user: from_user,
+      to_user: to_user,
+      avatar: avatar,
+      chat_msg: msg
+    }
+    // 更新本地聊天信息
+    let newList = [...infoData];
+    newList.push(pdata);
+    this.setState({
+      infos: newList
+    });
+    // 发送聊天信息
+    client.emitEvent(IMEvent.MSG_TEXT_SEND,JSON.stringify(pdata));
   }
 
   componentDidMount = async () => {
+    let {to_user,from_user,avatar} = this.props.chatInfo;
     let ret = await axios.post('chats/info', {
-      from_user: 1,
-      to_user: 4
+      from_user: from_user,
+      to_user: to_user
     });
     // 更新列表数据
     this.setState({
@@ -79,7 +113,7 @@ class ChatWindow extends React.Component {
         </div>
         <div className="chat-window-input">
           <Form>
-            <TextArea placeholder='请输入内容...' />
+            <TextArea value={this.state.msg} onChange={this.handleMsg} placeholder='请输入内容...' />
             <Button>关闭</Button>
             <Button primary onClick={this.sendMsg}>发送</Button>
           </Form>
@@ -94,7 +128,8 @@ class Chat extends React.Component {
     super(props);
     this.state = {
       listData: [],
-      open: false    // 控制聊天窗口的显示和隐藏
+      open: false,    // 控制聊天窗口的显示和隐藏
+      chatInfo: {}
     }
   }
   
@@ -106,10 +141,17 @@ class Chat extends React.Component {
     });
   }
 
-  toChat = () => {
+  toChat = (p) => {
+    console.log(p)
     // 显示聊天窗口
     this.setState({
-      open: true     
+      open: true,
+      chatInfo: {
+        to_user: p.to_user,
+        from_user: p.from_user,
+        username: p.username,
+        avatar: p.avatar
+      }
     });
   }
 
@@ -123,7 +165,7 @@ class Chat extends React.Component {
   render() {
     let listInfo = this.state.listData.map(item=>{
       return (
-        <li key={item.id} onClick={(e) => this.toChat()}>
+        <li key={item.id} onClick={(e) => this.toChat(item)}>
           <div className="avarter">
             <img src={item.avatar} alt="avarter"/>
             <span className="name">{item.username}</span>
@@ -141,7 +183,7 @@ class Chat extends React.Component {
             {listInfo}
           </ul>
         </div>
-        {this.state.open && <ChatWindow close={this.closeWindow}/>}
+        {this.state.open && <ChatWindow chatInfo={this.state.chatInfo} close={this.closeWindow}/>}
       </div>
     );
   }
