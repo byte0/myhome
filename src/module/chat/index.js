@@ -26,10 +26,11 @@ class ChatWindow extends React.Component {
     let {close} = this.props;
     let infolist = this.state.infoData.map(item=>{
       // 控制类名，从而保证不同的用户样式不同
-      // let cls = currentUser===item.from_user? 'chat-info-left':'chat-info-right';
+      let currentUser = parseInt(sessionStorage.getItem('uid'), 10);
+      let cls = currentUser===item.from_user? 'chat-info-left':'chat-info-right';
       return (
-        <li key={item.id} className='chat-info-left'>
-          <img src={baseURL + item.avatar} alt=""/>
+        <li key={item.id} className={cls}>
+          <img src={item.avatar} alt=""/>
           <span>{item.chat_msg}</span>
         </li>
       )
@@ -93,7 +94,7 @@ class Chat extends React.Component {
       return (
         <li key={item.id} onClick={(e) => this.toChat()}>
           <div className="avarter">
-            <img src={baseURL + item.avatar} alt="avarter"/>
+            <img src={item.avatar} alt="avarter"/>
             <span className="name">{item.username}</span>
             <span className="info">{item.chat_msg}</span>
             <span className="time">{item.ctime}</span>
