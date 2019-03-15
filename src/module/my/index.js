@@ -1,5 +1,6 @@
 import React from 'react';
 import { Grid, Icon, Button, Modal } from 'semantic-ui-react';
+import AvatarEditor from 'react-avatar-editor';
 import './index.css';
 import {baseURL} from '../../common';
 import axios from 'axios';
@@ -39,14 +40,48 @@ class ImageSelectModal extends React.Component {
 
 // 图片裁切弹窗
 class ImageCropModal extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      scale: 1
+    }
+  }
+  handleScale = (event) => {
+    // 控制scale值的变化
+    let num = parseFloat(event.target.value);
+    this.setState({
+      scale: num
+    });
+  }
   render() {
-    let { open, close } = this.props;
+    let { open, close, avatar } = this.props;
     return (
       <div>
         <Modal size='small' open={open} onClose={close}>
           <Modal.Header>裁切图片</Modal.Header>
           <Modal.Content>
-            <div>图片裁切</div>
+            <AvatarEditor
+              borderRadius={75}
+              width={150}
+              height={150}
+              border={50}
+              color={[255, 255, 255, 0.6]} // RGBA
+              rotate={0}
+              scale={this.state.scale}
+              image={avatar}
+            />
+            <div>
+              <span className='avatar-zoom'>缩放:</span>
+              <input
+                name="scale"
+                type="range"
+                onChange={this.handleScale}
+                min='1'
+                max='2'
+                step="0.01"
+                defaultValue="1"
+              />
+            </div>
           </Modal.Content>
           <Modal.Actions>
             <Button positive onClick={ this.submit } icon='checkmark' labelPosition='right' content='确定' />
@@ -117,7 +152,7 @@ class My extends React.Component {
     return (
       <div className='my-container'>
         <ImageSelectModal open={this.state.imageOpen} close={this.closeImageWindow}/>
-        <ImageCropModal open={this.state.cropOpen} close={this.closeCropWindow}/>
+        <ImageCropModal avatar={this.state.fileContent} open={this.state.cropOpen} close={this.closeCropWindow}/>
         <div className='my-title'>
           <img src={baseURL+'public/my-bg.png'} alt='me'/>
           <div className="info">
